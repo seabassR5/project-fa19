@@ -10,9 +10,59 @@ from student_utils import *
 def soda_drop_off(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, params=[]):
     car_loc = list_of_locations.index(starting_car_location)
     car_stayed_parked = [car_loc for _ in range (2)]
-    rao_didnt_drive_anyone_home = { car_loc : [i for i in range(len(list_of_homes))] }
+    homes = [i for i in range(len(list_of_locations)) if list_of_locations[i] in list_of_homes]
+    rao_didnt_drive_anyone_home = { car_loc : homes }
     return car_stayed_parked, rao_didnt_drive_anyone_home
+
+    pass
+
+def medoids_solve(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, params=[]):
+    """
+    GERERATING CLUSTERS/CLUSTERINGS:
+        # want to make multiple maps of {bus_stop: [list of Locations (cluster, mix of TA/nonTA)], ...}
+           each with varying amount of K clusters, say from 1 to len(locatoins)
+           WE NEED to prune clusters and remove any non TA locations, IF the list becomes empty remove it
+           pruned_cluster = { key, [loc for loc in val if list_of_locations[loc] in list_of_homes] for (key, val) in clusters}
+        
+        
+        # generate the Sortest paths graph for all pairs from adjacency graph then pass to nx.clustering/medoids
+        # the output of this function wil be REALLY CLOSE to 
+            the drop-off locatons dict we want to return, 
+            just remove any non-TA locations
+        
+         
+
+        # maybe we should somhow only consider clusters of TA home locations rather than passing the whole graph in
+     
+    SCOPE TSP: lookup mlrose library? 
+        https://towardsdatascience.com/solving-travelling-salesperson-problems-with-python-5de7e883d847
+    TSP ON CLUSTERS: we will run the following on all the clusterings
+        run some tsp alg on the shortest path distance matrix considering only the bus_stops/drop_off_loc
+        then we will get some ordering of the bus_stops -> bus_stop_list = [3, 5, 2, 8, 3], that corespond to location
+        
+        HOWEVER:
+            we need the locations in-between -> [3, ???, 5, ???, ???, 2, ???, 8, 3]
+        SO:
+            we get the shortest path list between each bus_stop i and i+1 with:
+            nx.single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight')
+            https://networkx.github.io/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.single_source_dijkstra.html#networkx.algorithms.shortest_paths.weighted.single_source_dijkstra 
+            which returns tuple: distance, path
+            AND insert the path in the bus_stop_list
+            full_path = []
+            for ndx in range(len(bus_stop_list) - 1):
+                bus_stop = bus_stop_list[ndx]
+                len, path = single_source_dijkstra(G, stop, bus_stop_list[ndx+1])
+                full_path.append(bus_stop)
+                full_path.append(path)
+        FINALLY:
+            after insterting all the locations inbetween the bus stops,
+            this will be the car route
+    triky bit:
+        we will have the cluster locations, and shortest path distances between them,
+        we want to return the tsp path but we only have bus_stops and not the locations inbetween
     
+    """
+
     pass
 
 """
@@ -34,7 +84,7 @@ def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_mat
         A dictionary mapping drop-off location to a list of homes of TAs that got off at that particular location
         NOTE: both outputs should be in terms of indices not the names of the locations themselves
     """
-    return soda_drop_off(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, params=params)
+    return soda_drop_off(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, params)
 
     pass
 
