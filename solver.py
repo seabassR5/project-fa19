@@ -4,12 +4,13 @@ sys.path.append('..')
 sys.path.append('../..')
 import argparse
 import utils
+from utils import *
 
 from student_utils import *
-def soda_drop_off(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, params=[])
-    car_loc = list_locations.index(starting_car_location)
+def soda_drop_off(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, params=[]):
+    car_loc = list_of_locations.index(starting_car_location)
     car_stayed_parked = [car_loc for _ in range (2)]
-    homes = [i for i in range(len(list_locations)) if list_locations[i] in list_of_homes]
+    homes = [i for i in range(len(list_of_locations)) if list_of_locations[i] in list_of_homes]
     rao_didnt_drive_anyone_home = { car_loc : homes }
     return car_stayed_parked, rao_didnt_drive_anyone_home
 
@@ -104,7 +105,7 @@ def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_mat
         A dictionary mapping drop-off location to a list of homes of TAs that got off at that particular location
         NOTE: both outputs should be in terms of indices not the names of the locations themselves
     """
-
+    return soda_drop_off(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, params)
 
     pass
 
