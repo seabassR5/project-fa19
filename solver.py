@@ -6,6 +6,15 @@ import argparse
 import utils
 
 from student_utils import *
+def soda_drop_off(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, params=[])
+    car_loc = list_locations.index(starting_car_location)
+    car_stayed_parked = [car_loc for _ in range (2)]
+    rao_didnt_drive_anyone_home = { car_loc : [i for i in range(len(list_of_homes))] }
+    return car_stayed_parked, rao_didnt_drive_anyone_home
+    
+    pass
+
+
 """
 ======================================================================
   Complete the following function.
