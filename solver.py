@@ -6,6 +6,7 @@ import argparse
 import utils
 from utils import *
 import networks 
+import networkx as nx
 
 from student_utils import *
 def soda_drop_off(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, params=[]):
@@ -16,6 +17,31 @@ def soda_drop_off(list_of_locations, list_of_homes, starting_car_location, adjac
     return car_stayed_parked, rao_didnt_drive_anyone_home
 
     pass
+def shortest_paths_medoids(adjacency_matrix, medoids_list):
+    G = adjacency_matrix_to_graph(adjacency_matrix)
+    # path is a dict where: path[a][b] returns a list of the shortest path 
+    path = dict(networks.all_pairs_dijkstra_path(G))
+
+    # (node, (distance, path)) ((node obj, (dict, dict))) 
+    # – Each source node has two associated dicts. 
+    # The first holds distance keyed by target 
+    # and the second holds paths keyed by target. 
+    # https://networkx.github.io/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.all_pairs_dijkstra.html#networkx.algorithms.shortest_paths.weighted.all_pairs_dijkstra
+    len_path = dict(nx.all_pairs_dijkstra(G))
+    dist = 0 # key to get distance dict keyd by target
+    path = 1 # key to get path list dict keyd by target
+    new_adjacency_matrix = []
+    for medoid_i in medoids_list:
+        row = []
+        for medoid_j in medoids_list:
+            row.append(len_path[medoid_i][dist][medoid_j])
+        new_adjacency_matrix.append(row)
+    
+    # path[a][b] returns a list of the shortest path
+    # new adjecency should contain: 
+    #   the dist from medoid_i to medoid_j for each entry matrix[i][j]
+    #   and each entry coresponds to the medoid list passed in
+    return path, new_adjacency_matrix 
 
 # def pruned_cluster(key, val, list_of_homes_by_ndx):
 
