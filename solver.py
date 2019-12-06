@@ -15,6 +15,27 @@ def soda_drop_off(list_of_locations, list_of_homes, starting_car_location, adjac
 
     pass
 
+# def pruned_cluster(key, val, list_of_homes_by_ndx):
+
+def prune_all_non_homes(clusters, list_of_homes_by_ndx):
+    """
+    clusters: dict with key val as indecies
+    list_of_homes: list of the indexes of homes
+
+    return val: only clusters that contain homes, non home locations are removed from list, clusters with empty are removed
+    """
+    new_clusters 
+    homes = set(list_of_homes_by_ndx)
+
+    for bus_stop, locations in clusters:
+        locations.append(bus_stop) #not sure if cluster includes the bus_stop
+        drop_offs = homes.intersection(set(locations)) 
+        ta_cluster = list(drop_offs)
+        if len(new_cluster) > 0:
+            new_clusters[bus_stop] = ta_cluster
+    return new_clusters
+
+
 def medoids_solve(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, params=[]):
     """
     GERERATING CLUSTERS/CLUSTERINGS:
