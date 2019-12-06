@@ -5,6 +5,7 @@ sys.path.append('../..')
 import argparse
 import utils
 from utils import *
+import networks 
 
 from student_utils import *
 def soda_drop_off(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, params=[]):
@@ -18,14 +19,14 @@ def soda_drop_off(list_of_locations, list_of_homes, starting_car_location, adjac
 
 # def pruned_cluster(key, val, list_of_homes_by_ndx):
 
-def prune_all_non_homes(clusters, list_of_homes_by_ndx):
+def prune_all_non_homes(medoids, clusters, list_of_homes_by_ndx):
     """
     clusters: dict with key val as indecies
     list_of_homes: list of the indexes of homes
 
     return val: only clusters that contain homes, non home locations are removed from list, clusters with empty are removed
     """
-    new_clusters 
+    new_clusters = {} 
     homes = set(list_of_homes_by_ndx)
 
     for bus_stop, locations in clusters:
@@ -36,6 +37,27 @@ def prune_all_non_homes(clusters, list_of_homes_by_ndx):
             new_clusters[bus_stop] = ta_cluster
     return new_clusters
 
+def generate_shortest_paths_matrix(adjacency_matrix, list_of_locations):
+    G = nx.Graph()
+    for i in range(len(adjacency_matrix)):
+        for j in range(len(adjacency_matrix[i])):
+            G.add_edge(i,j)
+    nodelist = [i for i in range(len(list_of_locations))]
+    return floyd_warshall_numpy(G, nodelist)
+
+def get_clusterings(list_of_homes, D, ks = []):
+    if len(ks) == 0:
+        ks = [i + 1 for i in range(list_of_homes)]
+    clusterings = []
+    for k in ks:
+        M, C = kMedoids(D, k) 
+        clusterings.append((M, C))
+    return clusterings
+
+def prune_all_clusterings(clusterings, homes_by_ndx):
+    for clusters in clusterings:
+        clusters[1] = prune_all_non_homes(clusters[0], clusters[1], homes_by_ndx)
+    return clusterings
 
 def medoids_solve(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, params=[]):
     """
@@ -47,6 +69,7 @@ def medoids_solve(list_of_locations, list_of_homes, starting_car_location, adjac
         
         
         # generate the Sortest paths graph for all pairs from adjacency graph then pass to nx.clustering/medoids
+        # nx.
         # the output of this function wil be REALLY CLOSE to 
             the drop-off locatons dict we want to return, 
             just remove any non-TA locations
@@ -83,6 +106,7 @@ def medoids_solve(list_of_locations, list_of_homes, starting_car_location, adjac
         we want to return the tsp path but we only have bus_stops and not the locations inbetween
     
     """
+    D = generate_shortest_paths_matrix(adjacency_matrix, list_of_locations)
 
     pass
 
@@ -105,7 +129,8 @@ def solve(list_of_locations, list_of_homes, starting_car_location, adjacency_mat
         A dictionary mapping drop-off location to a list of homes of TAs that got off at that particular location
         NOTE: both outputs should be in terms of indices not the names of the locations themselves
     """
-    return soda_drop_off(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, params)
+    return medoids_solve(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, params)
+    #return soda_drop_off(list_of_locations, list_of_homes, starting_car_location, adjacency_matrix, params)
 
     pass
 
